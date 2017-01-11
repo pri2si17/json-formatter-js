@@ -226,6 +226,10 @@ export = class JSONFormatter {
       return;
     }
 
+    if (this.open === depth) {
+      return;
+    }
+
     this.open = depth;
     this.isOpen = (depth !== 0);
 

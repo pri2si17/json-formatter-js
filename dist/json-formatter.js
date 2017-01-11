@@ -292,6 +292,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (depth < 0) {
 	            return;
 	        }
+	        if (this.open === depth) {
+	            return;
+	        }
 	        this.open = depth;
 	        this.isOpen = (depth !== 0);
 	        if (this.element) {
