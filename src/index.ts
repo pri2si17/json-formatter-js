@@ -94,6 +94,8 @@ export = class JSONFormatter {
     }
   }
 
+  private showHexVal: number = 0;
+
   /*
    * is formatter open?
   */
@@ -210,6 +212,10 @@ export = class JSONFormatter {
     }
   }
 
+  showHex( isHex = 1 ) {
+    this.showHexVal = isHex;
+  }
+
   /**
   * Open all children up to a certain depth.
   * Allows actions such as expand all/collapse all
@@ -247,7 +253,9 @@ export = class JSONFormatter {
       if (this.json.length > this.config.hoverPreviewArrayCount) {
         return `Array[${this.json.length}]`;
       } else {
-        return `[${this.json.map(getPreview).join(', ')}]`;
+        return `[${this.json.map(function(obj) {
+                                  return getPreview(obj, this.showHexVal);
+                                }).join(', ')}]`;
       }
     } else {
 
@@ -257,7 +265,7 @@ export = class JSONFormatter {
       const narrowKeys = keys.slice(0, this.config.hoverPreviewFieldCount);
 
       // json value schematic information
-      const kvs = narrowKeys.map(key => `${key}:${getPreview(this.json[key])}`);
+      const kvs = narrowKeys.map(key => `${key}:${getPreview(this.json[key], this.showHexVal)}`);
 
       // if keys count greater then 5 then show ellipsis
       const ellipsis = keys.length >= this.config.hoverPreviewFieldCount ? '…' : '';
@@ -333,7 +341,7 @@ export = class JSONFormatter {
       }
 
       // Append value content to value element
-      const valuePreview = getValuePreview(this.json, this.json);
+      const valuePreview = getValuePreview(this.json, this.json, this.showHexVal);
       value.appendChild(document.createTextNode(valuePreview));
 
       // append the value element to toggler link
@@ -400,6 +408,7 @@ export = class JSONFormatter {
       const addAChild = ()=> {
         const key = this.keys[index];
         const formatter = new JSONFormatter(this.json[key], this.open - 1, this.config, key);
+        formatter.showHex( this.showHexVal );
         children.appendChild(formatter.render());
 
         index += 1;
@@ -418,6 +427,7 @@ export = class JSONFormatter {
     } else {
       this.keys.forEach(key => {
         const formatter = new JSONFormatter(this.json[key], this.open - 1, this.config, key);
+        formatter.showHex( this.showHexVal );
         children.appendChild(formatter.render());
       });
     }

@@ -1,4 +1,4 @@
-# JSON Formatter
+﻿# JSON Formatter
 
 [![Build Status](https://travis-ci.org/mohsen1/json-formatter-js.svg?branch=master)](https://travis-ci.org/mohsen1/json-formatter-js)
 
@@ -6,7 +6,16 @@
 
 JSON Formatter started as an [AngularJS directive](https://github.com/mohsen1/json-formatter). This is pure JavaScript implementation of the same module.
 
-**[Live Demo](http://azimi.me/json-formatter-js/)**
+
+---------------------
+# BRANCH CHANGES
+
+* Added showHex() option, display numbers as decimal AND hex
+* Added the demo.html locally: 
+ * with buttons to change depth dynamically
+
+---------------------
+
 
 ### Usage
 
@@ -22,6 +31,8 @@ import JSONFormatter from 'json-formatter-js'
 const myJSON = {ans: 42};
 
 const formatter = new JSONFormatter(myJSON);
+
+formatter.showHex(1); // display number as hex as well as decimal
 
 document.body.appendChild(formatter.render());
 
@@ -69,6 +80,10 @@ document.body.appendChild(formatter.render());
 formatter.openAtDepth(3);
 ```
 
+##### `showHex` (`Number`)
+Default: `1`
+Decides if we should show the numbers as hex (1) as well as a decimal value.  Use a `0` to only display the numbers in decimal format.  Hex displays are off by default.
+
 ##### `depth` (`Number`)
 Default: `1`
 This number indicates up to how many levels the rendered tree should open. It allows use cases such as collapse all levels (with value `0`) or expand all levels (with value `Infinity`).
@@ -78,6 +93,12 @@ Install the dependencies:
 
 ```
 npm install
+```
+
+Compile and create mimified dist.
+
+```
+npm run build
 ```
 
 Run the dev server

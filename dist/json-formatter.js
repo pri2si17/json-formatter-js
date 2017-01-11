@@ -117,6 +117,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.key = key;
 	        // Hold the open state after the toggler is used
 	        this._isOpen = null;
+	        this.showHexVal = 0;
 	        // Setting default values for config object
 	        if (this.config.hoverPreviewEnabled === undefined) {
 	            this.config.hoverPreviewEnabled = _defaultConfig.hoverPreviewEnabled;
@@ -277,6 +278,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.element.classList.toggle(helpers_ts_1.cssClass('open'));
 	        }
 	    };
+	    JSONFormatter.prototype.showHex = function (isHex) {
+	        if (isHex === void 0) { isHex = 1; }
+	        this.showHexVal = isHex;
+	    };
 	    /**
 	    * Open all children up to a certain depth.
 	    * Allows actions such as expand all/collapse all
@@ -313,7 +318,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return "Array[" + this.json.length + "]";
 	            }
 	            else {
-	                return "[" + this.json.map(helpers_ts_1.getPreview).join(', ') + "]";
+	                return "[" + this.json.map(function (obj) {
+	                    return helpers_ts_1.getPreview(obj, this.showHexVal);
+	                }).join(', ') + "]";
 	            }
 	        }
 	        else {
@@ -321,7 +328,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // the first five keys (like Chrome Developer Tool)
 	            var narrowKeys = keys.slice(0, this.config.hoverPreviewFieldCount);
 	            // json value schematic information
-	            var kvs = narrowKeys.map(function (key) { return (key + ":" + helpers_ts_1.getPreview(_this.json[key])); });
+	            var kvs = narrowKeys.map(function (key) { return key + ":" + helpers_ts_1.getPreview(_this.json[key], _this.showHexVal); });
 	            // if keys count greater then 5 then show ellipsis
 	            var ellipsis = keys.length >= this.config.hoverPreviewFieldCount ? '…' : '';
 	            return "{" + kvs.join(', ') + ellipsis + "}";
@@ -379,7 +386,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                value.setAttribute('href', this.json);
 	            }
 	            // Append value content to value element
-	            var valuePreview = helpers_ts_1.getValuePreview(this.json, this.json);
+	            var valuePreview = helpers_ts_1.getValuePreview(this.json, this.json, this.showHexVal);
 	            value.appendChild(document.createTextNode(valuePreview));
 	            // append the value element to toggler link
 	            togglerLink.appendChild(value);
@@ -438,6 +445,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var addAChild_1 = function () {
 	                var key = _this.keys[index_1];
 	                var formatter = new JSONFormatter(_this.json[key], _this.open - 1, _this.config, key);
+	                formatter.showHex(_this.showHexVal);
 	                children.appendChild(formatter.render());
 	                index_1 += 1;
 	                if (index_1 < _this.keys.length) {
@@ -454,6 +462,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else {
 	            this.keys.forEach(function (key) {
 	                var formatter = new JSONFormatter(_this.json[key], _this.open - 1, _this.config, key);
+	                formatter.showHex(_this.showHexVal);
 	                children.appendChild(formatter.render());
 	            });
 	        }
@@ -850,6 +859,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	function escapeString(str) {
 	    return str.replace('"', '\"');
 	}
+	function isFloat(n) {
+	    return Number(n) == n && n % 1 != 0;
+	}
+	function toHex(val, padLen) {
+	    if (typeof val == 'undefined') {
+	        return "";
+	    }
+	    if (typeof val == 'string') {
+	        val = parseInt(val);
+	    }
+	    var sVal = (val < 0 ? (0xFFFFFFFF + val + 1) : val).toString(16);
+	    if (typeof padLen != 'undefined') {
+	        if (sVal.length < padLen) {
+	            // +1 because the Array gives one less that you want
+	            var len = (padLen - sVal.length) + 1;
+	            sVal = Array(len).join("0") + sVal;
+	        }
+	    }
+	    return sVal.toUpperCase();
+	}
+	; // toHex
 	/*
 	 * Determines if a value is an object
 	*/
@@ -896,13 +926,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	/*
 	 * Generates inline preview for a JavaScript object based on a value
 	*/
-	function getValuePreview(object, value) {
+	function getValuePreview(object, value, showHex) {
 	    var type = getType(object);
 	    if (type === 'null' || type === 'undefined') {
 	        return type;
 	    }
 	    if (type === 'string') {
 	        value = '"' + escapeString(value) + '"';
+	    }
+	    if ((type === 'number') && (!isFloat(value))) {
+	        if (showHex) {
+	            value = value + ' (0x' + toHex(value, 2) + ')';
+	        }
 	    }
 	    if (type === 'function') {
 	        // Remove content of the function
@@ -916,7 +951,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/*
 	 * Generates inline preview for a JavaScript object
 	*/
-	function getPreview(object) {
+	function getPreview(object, showHex) {
 	    var value = '';
 	    if (isObject(object)) {
 	        value = getObjectName(object);
@@ -924,7 +959,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            value += '[' + object.length + ']';
 	    }
 	    else {
-	        value = getValuePreview(object, object);
+	        value = getValuePreview(object, object, showHex);
 	    }
 	    return value;
 	}

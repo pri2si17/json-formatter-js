@@ -5,6 +5,35 @@ function escapeString(str: string): string {
   return str.replace('"', '\"');
 }
 
+function isFloat(n: any): boolean {
+  return Number(n) == n && n % 1 != 0;
+}
+
+function toHex(val: string | number, padLen: number): string {
+
+  if (typeof val == 'undefined') {
+    return "";
+  }
+
+  if (typeof val == 'string') {
+    val = parseInt(val);
+  }
+
+  var sVal = (val < 0 ? (0xFFFFFFFF + val + 1) : val).toString(16);
+
+  if (typeof padLen != 'undefined') {
+
+    if (sVal.length < padLen) {
+      // +1 because the Array gives one less that you want
+      var len = (padLen - sVal.length) + 1;
+      sVal = Array(len).join("0") + sVal;
+    }
+  }
+
+  return sVal.toUpperCase();
+
+}; // toHex
+
 /*
  * Determines if a value is an object
 */
@@ -49,13 +78,19 @@ export function getType(object: Object): string {
 /*
  * Generates inline preview for a JavaScript object based on a value
 */
-export function getValuePreview (object: Object, value: string): string {
+export function getValuePreview (object: Object, value: string, showHex: number): string {
   var type = getType(object);
 
   if (type === 'null' || type === 'undefined') { return type; }
 
   if (type === 'string') {
     value = '"' + escapeString(value) + '"';
+  }
+  if ((type === 'number') && (!isFloat(value))) {
+
+    if (showHex) {
+      value = value + ' (0x' + toHex(value, 2) + ')';
+    }
   }
   if (type === 'function'){
 
@@ -70,14 +105,14 @@ export function getValuePreview (object: Object, value: string): string {
 /*
  * Generates inline preview for a JavaScript object
 */
-export function getPreview(object: string): string {
+export function getPreview(object: string, showHex: number): string {
   let value = '';
   if (isObject(object)) {
     value = getObjectName(object);
     if (Array.isArray(object))
       value += '[' + object.length + ']';
   } else {
-    value = getValuePreview(object, object);
+    value = getValuePreview(object, object, showHex);
   }
   return value;
 }
