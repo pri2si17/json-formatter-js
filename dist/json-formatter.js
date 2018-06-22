@@ -516,18 +516,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	var update = __webpack_require__(5)(content, {"sourceMap":true});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/less-loader/index.js?sourceMap!./style.less", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/less-loader/index.js?sourceMap!./style.less");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
+//	if(false) {
+//		// When the styles change, update the <style> tags
+//		if(!content.locals) {
+//			module.hot.accept("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/less-loader/index.js?sourceMap!./style.less", function() {
+//				var newContent = require("!!./../node_modules/css-loader/index.js?sourceMap!./../node_modules/less-loader/index.js?sourceMap!./style.less");
+//				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+//				update(newContent);
+//			});
+//		}
+//		// When the module is disposed, remove the <style> tags
+//		module.hot.dispose(function() { update(); });
+//	}
 
 /***/ },
 /* 3 */
